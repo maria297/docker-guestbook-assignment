@@ -4,7 +4,7 @@
 
 ## Бързи връзки
 
-- **Docker Hub образ:** https://hub.docker.com/r/stefantriv/guestbook-backend]
+- **Docker Hub образ:** https://hub.docker.com/r/stefantriv/guestbook-backend
 
 
 
