@@ -49,7 +49,7 @@
 - **Редактор**: Visual Studio Code
 
 ## 4. Структура на проекта
-
+```bash
 /docker-guestbook
 ├── backend/
 │ ├── Dockerfile # Инструкции за създаване на Docker образ за Node.js бекенда
@@ -57,6 +57,7 @@
 │ ├── package.json # Node.js зависимости и скриптове
 │ └── server.js # Express логика и връзка с база данни
 └── compose.yml # Главен Docker Compose файл, дефиниращ услугите
+```
 
 
 
