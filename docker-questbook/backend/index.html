@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Guestbook</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; background-color: #f4f4f4; }
+        h1, h2 { color: #333; }
+        #guestbook-form { background: white; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        input, textarea { width: 95%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 3px; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #messages-container { margin-top: 20px; }
+        .message { background: white; padding: 15px; margin-bottom: 10px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .message strong { color: #0056b3; }
+        .message small { color: #888; float: right; }
+    </style>
+</head>
+<body>
+    <h1>Docker Guestbook</h1>
+
+    <div id="guestbook-form">
+        <h2>Leave a Message</h2>
+        <form id="newMessageForm">
+            <input type="text" id="username" placeholder="Your Name" required>
+            <textarea id="message" rows="4" placeholder="Your Message" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <div id="messages-container">
+        <h2>Messages</h2>
+        <div id="messages">Loading messages...</div>
+    </div>
+
+    <script>
+        async function fetchMessages() {
+            const messagesDiv = document.getElementById('messages');
+            try {
+                const response = await fetch('/messages');
+                const messages = await response.json();
+                messagesDiv.innerHTML = ''; 
+                if (messages.length === 0) {
+                    messagesDiv.innerHTML = '<p>No messages yet. Be the first!</p>';
+                } else {
+                    messages.forEach(msg => {
+                        const msgElement = document.createElement('div');
+                        msgElement.className = 'message';
+                        const date = new Date(msg.created_at).toLocaleString();
+                        msgElement.innerHTML = `<small>${date}</small><strong>${msg.username}:</strong><p>${msg.message}</p>`;
+                        messagesDiv.appendChild(msgElement);
+                    });
+                }
+            } catch (error) {
+                messagesDiv.innerHTML = '<p>Could not load messages.</p>';
+                console.error('Error fetching messages:', error);
+            }
+        }
+
+        document.getElementById('newMessageForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const message = document.getElementById('message').value;
+
+            try {
+                await fetch('/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, message }),
+                });
+                document.getElementById('username').value = '';
+                document.getElementById('message').value = '';
+                fetchMessages(); 
+            } catch (error) {
+                console.error('Error posting message:', error);
+                alert('Failed to post message.');
+            }
+        });
+
+        // Fetch messages on page load
+        fetchMessages();
+    </script>
+</body>
+</html>
